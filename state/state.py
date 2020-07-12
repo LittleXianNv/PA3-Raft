@@ -12,7 +12,7 @@ class State(object):
             self.server.set_state(self)
     
     # Initialize and specify the server to live
-    def set_server(self, server):
+    def setServer(self, server):
         self.server = server
 
     # Send the vote response msg 
@@ -60,23 +60,23 @@ class State(object):
         self.server.send_response(response)
 
     # General message handler
-    def handle_message(self, message):
-        if message.type is None or message.term is None:
-            self.sendBadResponse(message)
+    def handleMsg(self, msg):
+        if msg.type is None or msg.term is None:
+            self.sendBadResponse(msg)
             return
         
         # TODO: Update the election timer
 
         # TODO: check the base message type and then handle
-        if message.type == BaseMessage.APPEND_ENTRIES_REQUEST:
-            self.appendEntryRequestHandler(message)
-        elif message.type == BaseMessage.VOTE_REQUEST:
-            self.voteRequestHandler(message)
-        elif message.type == BaseMessage.APPEND_ENTRIES_RESPONSE:
-            self.appensEntryResponseHandler(message)
-        elif message.type == BaseMessage.VOTE_RESPONSE:
-            self.voteReponseHandler(message)
-        elif message.type == BaseMessage.BAD_RESPONSE:
+        if msg.type == BaseMessage.APPEND_ENTRIES_REQUEST:
+            self.appendEntryRequestHandler(msg)
+        elif msg.type == BaseMessage.VOTE_REQUEST:
+            self.voteRequestHandler(msg)
+        elif msg.type == BaseMessage.APPEND_ENTRIES_RESPONSE:
+            self.appensEntryResponseHandler(msg)
+        elif msg.type == BaseMessage.VOTE_RESPONSE:
+            self.voteReponseHandler(msg)
+        elif msg.type == BaseMessage.BAD_RESPONSE:
         else:
             pass
 
