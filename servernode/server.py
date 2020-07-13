@@ -3,14 +3,16 @@ from threading import Timer
 import threading
 import metadata
 from ..state.candidate import Candidate
+from ..state.follower import Follower
 import zmq
 from config import config
+
 
 class Server(object):
     def __init__(self, id, state, log, connectedNode, initialTimeout=None):
         self.id = id
         self.state = state
-        self.log = log  
+        self.log = log
         self.connectedNode = connectedNode
         self.commitIndex = 0
         # to count current term
@@ -32,7 +34,6 @@ class Server(object):
         self.pThread = threading.Thread(target=self.processClient)
         self.pThread.start()
 
-
     def processClient(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
@@ -51,7 +52,7 @@ class Server(object):
             self.setElectionTimer()
         else:
             self.setElectionTimer(initialTimeout)
-    
+
     def setElectionTimer(self, timeout=random.randrange(200, 400)/1000):
         # cancel original timer to prevent duplicated candidate living on one server
         if self.timer:
@@ -68,11 +69,6 @@ class Server(object):
         Candidate(self)
         # current thread would do election and becomes leader if possible
 
-    def listen_client(self):
-
-
-    def listen_client(self):
-    
     def publishTask(self):
         context = zmq.Context()
         socket = context.socket(zmq.PUB)
@@ -82,10 +78,9 @@ class Server(object):
                 self.bufferLock.acquire()
                 message = self.msgBuffer.popleft()
                 self.bufferLock.release()
-                #socket.send_pyobj(message)
+                # socket.send_pyobj(message)
             time.sleep(0.01)
 
-    
     def subscribeTask(self):
         context = zmq.Context()
         socket = context.socket(zmq.SUB)
@@ -100,7 +95,7 @@ class Server(object):
             msg = socket.recv_pyobj()
             if msg.receiver == self.id or msg.receiver == None:
                 self.receiveMsg(msg)
-    
+
     def receiveMsg(self, msg):
         # call the handleMsg method state
         if self.curTerm < msg.term:
@@ -109,3 +104,10 @@ class Server(object):
             Follower(self)
         self.state.handleMsg(msg)
         return
+
+    def applyLog(self, newLastAppliedIndex):
+        # apply action in log to metadata
+        for i in range(self.lastApplied+1, newLastAppliedIndex+1):
+            logEntry = self.log[i]
+            self.metaData.
+        self.lastApplied = newLastAppliedIndex

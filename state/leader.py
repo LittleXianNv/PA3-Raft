@@ -41,7 +41,7 @@ class Leader(State):
                 if len(machedIndexArray) - i >= (len(machedIndexArray) / 2):
                     # Update the commit index and log the commit index
                     self.server.commitIndex = matchIndex
-                    self.server.apply_log(self.server.commitIndex)
+                    self.server.applyLog(self.server.commitIndex)
                 return
 
     def handle_client_request(self, request):
