@@ -78,7 +78,7 @@ class Server(object):
                 self.bufferLock.acquire()
                 message = self.msgBuffer.popleft()
                 self.bufferLock.release()
-                # socket.send_pyobj(message)
+                socket.send_pyobj(message)
             time.sleep(0.01)
 
     def subscribeTask(self):
@@ -96,6 +96,13 @@ class Server(object):
             if msg.receiver == self.id or msg.receiver == None:
                 self.receiveMsg(msg)
 
+    def publishMsg(self, msg):
+        # push the message to the publish message queue
+        self.bufferLock.acquire()
+        self.msgBuffer.append(msg)
+        self.bufferLock.release()
+        return
+
     def receiveMsg(self, msg):
         # call the handleMsg method state
         if self.curTerm < msg.term:
@@ -111,3 +118,15 @@ class Server(object):
             logEntry = self.log[i]
             self.metaData.
         self.lastApplied = newLastAppliedIndex
+
+    def lastLogIndex(self):
+        # return the index of the last log entry
+        return len(self.log)-1
+
+    def lastLogTerm(self):
+        # return the term of the last log entry
+        return self.log[-1]["term"]
+
+    def setState(self, state):
+        self.state = state
+        return

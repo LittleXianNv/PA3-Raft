@@ -8,7 +8,7 @@ class metadata(Object):
         # [filename]:[chunkname]:[ip]:path
 
 
-    def putFileChunk(filechunklist, filename):
+    def putFileChunk(self, filechunklist, filename):
         # {
             # function:"put_file_chunk",
             # arguementlist:[["test_trunk1,..."],"test"]
@@ -17,8 +17,6 @@ class metadata(Object):
         self.files
         # todo assign server
 
-    def deleteFileChunk(filename):
+    def deleteFileChunk(self, filename):
 
-    def getIp(filename):
-
-    def
+    def getIp(self, filename):
