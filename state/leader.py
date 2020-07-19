@@ -6,9 +6,10 @@ from ..config import Config
 from collections import defaultdict
 import threading
 
+
 class Leader(State):
-    def __init__(self,server=None):
-        State.__init__(self,server)
+    def __init__(self, server=None):
+        State.__init__(self, server)
         self.matchIndex = defaultdict(int)
         self.nextIndex = defaultdict(int)
         for adjacent in self.server.adjacents:
@@ -23,12 +24,12 @@ class Leader(State):
         self.hThread.start()
 
     def handle_vote_request(self, message):
-    # Leader would refuse any vote request except the one contain higher term (leader would convert to follower)
+        # Leader would refuse any vote request except the one contain higher term (leader would convert to follower)
         self.sendVoteResponse(message, False)
 
     def handle_append_entries_response(self, message):
         if message.data['success']:
-            # Update the index 
+            # Update the index
             self.matchIndex[message.sender] = message.data['matchIndex']
             self.nextIndex[message.sender] = message.data['matchIndex'] + 1
             self.updateCommitIndex()
@@ -51,38 +52,40 @@ class Leader(State):
         if request.type == 'GET':
             key = request.payload['key']
             # TODO: Response the server
-            
+
         elif request.type == 'PUT':
-            self.server.log.append({'action':request.payload, 'term':self.server.curTerm})
-            time.sleep(0.3) # Wait the log to be applied
+            self.server.log.append(
+                {'action': request.payload, 'term': self.server.curTerm})
+            time.sleep(0.3)  # Wait the log to be applied
             # Response the server
-            index =self.server.lastLogIndex()
+            index = self.server.lastLogIndex()
             if self.server.lastApplied >= index:
-                return ServerResponse('200',{})
+                return ServerResponse('200', {})
             else:
-                return ServerResponse('400',{})
+                return ServerResponse('400', {})
         return response
 
     # TODO: heartbeat
     def heartbeat(self):
         while True:
-            if self.server.state == self: 
+            if self.server.state == self:
                 # Specify heartbeart message to all adjacient nodes
                 for adjacent in self.server.connectedNode:
                     self.server.log_lock.acquire()
-                    data={
-                    'prevLogIndex': self.server.lastLogIndex(),
-                    'prevLogTerm': self.server.lastLogTerm(),
-                    'entries': [],
-                    'leaderCommit': self.server.commitIndex
+                    data = {
+                        'prevLogIndex': self.server.lastLogIndex(),
+                        'prevLogTerm': self.server.lastLogTerm(),
+                        'entries': [],
+                        'leaderCommit': self.server.commitIndex
                     }
                     self.server.logLock.release()
 
                     if self.server.lastLogIndex() >= self.nextIndex[adjacent]:
-                        data['prevLogIndex']=self.nextIndex[adjacent]-1
-                        data['prevLogTerm']=self.server.log[data['prevLogIndex']]['term']
-                        data['entries']=self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
-                    message = AppendEntriesRequest(self.server.id, adjacent, self.server.curTerm, data)
+                        data['prevLogIndex'] = self.nextIndex[adjacent]-1
+                        data['prevLogTerm'] = self.server.log[data['prevLogIndex']]['term']
+                        data['entries'] = self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
+                    message = AppendEntriesRequest(
+                        self.server.id, adjacent, self.server.curTerm, data)
                     self.server.publishMsg(message)
                 time.sleep(0.2)
             else:

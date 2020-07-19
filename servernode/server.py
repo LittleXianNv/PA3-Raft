@@ -13,7 +13,7 @@ class Server(object):
         self.id = id
         self.state = state
         self.log = log
-        self.connectedNode = connectedNode
+        self.connectedNode = connectedNode  # list of node id
         self.commitIndex = 0
         # to count current term
         self.curTerm = 0
@@ -116,7 +116,7 @@ class Server(object):
         # apply action in log to metadata
         for i in range(self.lastApplied+1, newLastAppliedIndex+1):
             logEntry = self.log[i]
-            self.metaData.
+            # TODO: modify metadata
         self.lastApplied = newLastAppliedIndex
 
     def lastLogIndex(self):

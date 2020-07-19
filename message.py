@@ -1,5 +1,6 @@
 class Message(object):
     '''
+
     This class is a wrapper class of necessary information. It is the subclass of the following four messages.
     And it contains four kinds of constant variables to indicate the type of messages. 
 
@@ -22,8 +23,16 @@ class Message(object):
         self.data = data
 
 
+<< << << < HEAD
 class AppendEntriesRequest(Message):
-    '''Append entries request
+
+
+== == == =
+class AppendEntriesRequest(BaseMessage):
+
+
+>>>>>> > df2a0a8... finish metadataManager and metadata class
+'''Append entries request
 
     This class represents the request to append entries.
 
@@ -38,13 +47,28 @@ class AppendEntriesRequest(Message):
                     }
     '''
 
-    def __init__(self, sender, receiver, term, data):
-        Message.__init__(self, sender, receiver, term, data)
-        self.type = Message.APPEND_ENTRIES_REQUEST
+
+def __init__(self, sender, receiver, term, data):
+
+
+<< << << < HEAD
+Message.__init__(self, sender, receiver, term, data)
+self.type = Message.APPEND_ENTRIES_REQUEST
 
 
 class AppendEntriesResponse(Message):
-    '''Append entries response
+
+
+== == == =
+BaseMessage.__init__(self, sender, receiver, term, data)
+self.type = BaseMessage.APPEND_ENTRIES_REQUEST
+
+
+class AppendEntriesResponse(BaseMessage):
+
+
+>>>>>> > df2a0a8... finish metadataManager and metadata class
+'''Append entries response
 
     This class represents the response to append entries.
 
@@ -55,13 +79,28 @@ class AppendEntriesResponse(Message):
             }
     '''
 
-    def __init__(self, sender, receiver, term, data):
-        Message.__init__(self, sender, receiver, term, data)
-        self.type = Message.APPEND_ENTRIES_RESPONSE
+
+def __init__(self, sender, receiver, term, data):
+
+
+<< << << < HEAD
+Message.__init__(self, sender, receiver, term, data)
+self.type = Message.APPEND_ENTRIES_RESPONSE
 
 
 class VoteRequest(Message):
-    '''Vote request
+
+
+== == == =
+BaseMessage.__init__(self, sender, receiver, term, data)
+self.type = BaseMessage.APPEND_ENTRIES_RESPONSE
+
+
+class VoteRequest(BaseMessage):
+
+
+>>>>>> > df2a0a8... finish metadataManager and metadata class
+'''Vote request
 
     This class represents the request to append entries.
 
@@ -74,13 +113,28 @@ class VoteRequest(Message):
             }
     '''
 
-    def __init__(self, sender, receiver, term, data):
-        Message.__init__(self, sender, receiver, term, data)
-        self.type = Message.VOTE_REQUEST
+
+def __init__(self, sender, receiver, term, data):
+
+
+<< << << < HEAD
+Message.__init__(self, sender, receiver, term, data)
+self.type = Message.VOTE_REQUEST
 
 
 class VoteResponse(Message):
-    '''Vote response
+
+
+== == == =
+BaseMessage.__init__(self, sender, receiver, term, data)
+self.type = BaseMessage.VOTE_REQUEST
+
+
+class VoteResponse(BaseMessage):
+
+
+>>>>>> > df2a0a8... finish metadataManager and metadata class
+'''Vote response
 
     This class represents the response to vote.
 
@@ -91,15 +145,33 @@ class VoteResponse(Message):
             }
     '''
 
-    def __init__(self, sender, receiver, term, data):
-        Message.__init__(self, sender, receiver, term, data)
-        self.type = Message.VOTE_RESPONSE
+
+def __init__(self, sender, receiver, term, data):
+
+
+<< << << < HEAD
+Message.__init__(self, sender, receiver, term, data)
+self.type = Message.VOTE_RESPONSE
 
 
 class BadResponse(Message):
     def __init__(self, sender, receiver, term, data):
         Message.__init__(self, sender, receiver, term, data)
         self.type = Message.BAD_RESPONSE
+
+
+== == == =
+BaseMessage.__init__(self, sender, receiver, term, data)
+self.type = BaseMessage.VOTE_RESPONSE
+
+
+class BadResponse(BaseMessage):
+    def __init__(self, sender, receiver, term, data):
+        BaseMessage.__init__(self, sender, receiver, term, data)
+        self.type = BaseMessage.BAD_RESPONSE
+
+
+>>>>>> > df2a0a8... finish metadataManager and metadata class
 
 
 class ServerRequest(object):
