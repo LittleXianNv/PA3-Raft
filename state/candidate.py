@@ -2,6 +2,8 @@ import time
 import random
 from ..state.state import State
 from ..state.leader import Leader
+from ..config import Config
+from ..message import *
 
 class Candidate(State):
 
@@ -10,12 +12,12 @@ class Candidate(State):
         State.__init__(self, server)
         self.voteReceived = {self.server.id: 1}
         self.votedFor = self.server.id
-        #TODO: update the election timer
+        self.server.setElectionTimer()
         self.requestElection()
 
     def requestElection(self):
         candId = self.server.id
-        term = self.server.currentTerm
+        term = self.server.curTerm
         data = {
             'lastLogIndex':self.server.lastLogIndex(),
             'lastLogTerm' :self.server.lastLogTerm()
@@ -29,9 +31,9 @@ class Candidate(State):
     def voteResponseHandler(self, message):
 
         # If the server current term less than message term, not correct
-        if message.term>self.server.currentTerm:
+        if message.term > self.server.curTerm:
             return
-        elif message.term == self.server.currentTerm:
+        elif message.term == self.server.curTerm:
             if message.data['voteGranted']:
                 # If received vote from sender, add the vote into voteReceived
                 self.voteReceived[message.sender] = 1
@@ -40,7 +42,11 @@ class Candidate(State):
                 self.voteReceived[message.sender] = 0
         
         # TODO: Check if the candidate can be promoted to leader 
-        
+        if type(self.server.state) == Candidate and 2 * sum(self.voteReceived.values()) > Config.NUMBER_TOTAL_SERVERS:
+            # Now promote to leader
+            print(self.server.id+" become leader"+'\ncurrent term is: '+str(self.server.curTerm)
+                + " vote detail: "+str(self.voteReceived))
+            Leader(self.server)
         return
 
 

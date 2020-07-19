@@ -1,6 +1,7 @@
 import time
 import random
 from ..state.state import State
+from ..message import *
 from ..config import Config
 from collections import defaultdict
 import threading
@@ -17,7 +18,9 @@ class Leader(State):
             self.matchIndex[adjacent] = 0
         if self.server.timer:
             self.server.timer.cancel()
-        # TODO: heartbeat
+        # heartbeat
+        self.hThread = threading.Thread(target=self.heartbeat)
+        self.hThread.start()
 
     def handle_vote_request(self, message):
     # Leader would refuse any vote request except the one contain higher term (leader would convert to follower)
@@ -50,9 +53,37 @@ class Leader(State):
             # TODO: Response the server
             
         elif request.type == 'PUT':
-            self.server.log.append({'action':request.payload, 'term':self.server.currentTerm})
+            self.server.log.append({'action':request.payload, 'term':self.server.curTerm})
             time.sleep(0.3) # Wait the log to be applied
-            # TODO: Response the server
+            # Response the server
+            index =self.server.lastLogIndex()
+            if self.server.lastApplied >= index:
+                return ServerResponse('200',{})
+            else:
+                return ServerResponse('400',{})
         return response
 
     # TODO: heartbeat
+    def heartbeat(self):
+        while True:
+            if self.server.state == self: 
+                # Specify heartbeart message to all adjacient nodes
+                for adjacent in self.server.connectedNode:
+                    self.server.log_lock.acquire()
+                    data={
+                    'prevLogIndex': self.server.lastLogIndex(),
+                    'prevLogTerm': self.server.lastLogTerm(),
+                    'entries': [],
+                    'leaderCommit': self.server.commitIndex
+                    }
+                    self.server.logLock.release()
+
+                    if self.server.lastLogIndex() >= self.nextIndex[adjacent]:
+                        data['prevLogIndex']=self.nextIndex[adjacent]-1
+                        data['prevLogTerm']=self.server.log[data['prevLogIndex']]['term']
+                        data['entries']=self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
+                    message = AppendEntriesRequest(self.server.id, adjacent, self.server.curTerm, data)
+                    self.server.publishMsg(message)
+                time.sleep(0.2)
+            else:
+                return

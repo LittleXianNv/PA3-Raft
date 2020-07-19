@@ -1,5 +1,6 @@
 import time
 import random
+from ..message import *
 
 class State(object):
 
@@ -24,7 +25,7 @@ class State(object):
             print(response.sender + " vote " + response.receiver +' current term is '+str(self.server.currentTerm))
         else:
             print(response.sender+" refuse to vote " + response.receiver)
-        self.server.publish_message(response)
+        self.server.publishMsg(response)
 
     # Handle the vote request message
     def voteRequestHandler(self, message): 
@@ -57,7 +58,7 @@ class State(object):
     def sendBadResponse(self, message): 
         data = {}
         response = BadResponse(self.server.name, message.sender, message.term, data)
-        self.server.send_response(response)
+        #self.server.send_response(response)
 
     # General message handler
     def handleMsg(self, msg):
@@ -65,24 +66,27 @@ class State(object):
             self.sendBadResponse(msg)
             return
         
-        # TODO: Update the election timer
+        # Update the election timer
+        self.server.setElectionTimer();
 
-        # TODO: check the base message type and then handle
-        if msg.type == BaseMessage.APPEND_ENTRIES_REQUEST:
+        # Check the base message type and then handle
+        if msg.type == Message.APPEND_ENTRIES_REQUEST:
             self.appendEntryRequestHandler(msg)
-        elif msg.type == BaseMessage.VOTE_REQUEST:
+        elif msg.type == Message.VOTE_REQUEST:
             self.voteRequestHandler(msg)
-        elif msg.type == BaseMessage.APPEND_ENTRIES_RESPONSE:
+        elif msg.type == Message.APPEND_ENTRIES_RESPONSE:
             self.appensEntryResponseHandler(msg)
-        elif msg.type == BaseMessage.VOTE_RESPONSE:
+        elif msg.type == Message.VOTE_RESPONSE:
             self.voteReponseHandler(msg)
-        elif msg.type == BaseMessage.BAD_RESPONSE:
+        elif msg.type == Message.BAD_RESPONSE:
+            print("ERROR")
         else:
             pass
 
-    def handle_client_request(self, request):
+    def clientRequestHandler(self, request):
         if self.leaderId:
-            # TODO: reply it with ip and port message
+            # reply it with ip and port message
+            response = ServerResponse('300',{'ip_address':Config.SERVER_LIST[self.leaderId][0],'port':Config.SERVER_LIST[self.leaderId][1],})
         else:
             response = ServerResponse('500',{})
         return response

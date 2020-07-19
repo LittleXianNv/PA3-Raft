@@ -1,13 +1,17 @@
 import time
 import random
 from ..state.state import State
+from ..message import *
+from ..state.state import State
+from ..config import Config
 
 class Follower(State):
 
 	def __init__(self,server = None):
 		# Initialize the server first
 		State.__init__(self, server)
-		# TODO: reset the election timer
+		if self.server:
+			self.server.setElectionTimer()
 
 	# Send the reponse of AppendEntry message
 	def sendAppendEntryResponse(self, message, success, matchIndex): 
@@ -18,14 +22,14 @@ class Follower(State):
 		# Build the appendEntries response message
 		response = AppendEntriesResponse(self.server.id, message.sender, message.term, data)
 		# Actually send the response message
-		self.server.publish_message(response)
+		self.server.publishMsg(response)
 
 	# handle the "appendEntryRequest" message
 	def appendEntryRequestHandler(self, message):
-		#TODO: restart the election timer
+		self.server.setElectionTimer()
 
 		# If message term less than server current term, discard the msg
-		if message.term < self.server.currentTerm:
+		if message.term < self.server.curTerm:
 			self.sendAppendEntryResponse(message, False, self.server.lastLogIndex())
 			return
 
