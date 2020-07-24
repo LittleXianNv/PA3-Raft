@@ -5,7 +5,7 @@ class Metadata(Object):
     def __init__(self):
         # map of file chunk to list of store ip
         self.filechunks = defaultdict(list)
-        self.filelist = defaultdict()  # map of file and file chunk
+        self.filelist = defaultdict(list)  # map of file and file chunk list
 
     def putFileChunk(self, fileChunkName, ip_list):
         # {
