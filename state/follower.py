@@ -2,7 +2,6 @@ import time
 import random
 from ..state.state import State
 from ..message import *
-from ..state.state import State
 from ..config import Config
 
 

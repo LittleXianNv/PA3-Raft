@@ -5,10 +5,11 @@ from ..state.leader import Leader
 from ..config import Config
 from ..message import *
 
+
 class Candidate(State):
 
     # Initialize the candidate
-    def __init__(self,server = None):
+    def __init__(self, server=None):
         State.__init__(self, server)
         self.voteReceived = {self.server.id: 1}
         self.votedFor = self.server.id
@@ -19,8 +20,8 @@ class Candidate(State):
         candId = self.server.id
         term = self.server.curTerm
         data = {
-            'lastLogIndex':self.server.lastLogIndex(),
-            'lastLogTerm' :self.server.lastLogTerm()
+            'lastLogIndex': self.server.lastLogIndex(),
+            'lastLogTerm': self.server.lastLogTerm()
         }
         # Build the vote request message
         message = VoteRequest(candId, None, term, data)
@@ -38,28 +39,13 @@ class Candidate(State):
                 # If received vote from sender, add the vote into voteReceived
                 self.voteReceived[message.sender] = 1
             else:
-                # If sender refuse vote for candidate, set sender to zero 
+                # If sender refuse vote for candidate, set sender to zero
                 self.voteReceived[message.sender] = 0
-        
-        # TODO: Check if the candidate can be promoted to leader 
+
+        # TODO: Check if the candidate can be promoted to leader
         if type(self.server.state) == Candidate and 2 * sum(self.voteReceived.values()) > Config.NUMBER_TOTAL_SERVERS:
             # Now promote to leader
             print(self.server.id+" become leader"+'\ncurrent term is: '+str(self.server.curTerm)
-                + " vote detail: "+str(self.voteReceived))
+                  + " vote detail: "+str(self.voteReceived))
             Leader(self.server)
         return
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        

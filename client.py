@@ -32,7 +32,7 @@ class Client(object):
 		elif argv[1] == 'lshere':
 			lshere()
 		else:
-			# wrong input format
+			print("wrong input format!")
 	
 
 	def put(self,localfilename, fs533filename):
@@ -43,20 +43,34 @@ class Client(object):
 		response_data = self.sends(request)
 		print(response_data)
 		# TODO send file to the server indicated by response from leader
-		
+		response = self.sends(ServerRequest(PUT_DONE,{"filename":fs533filename,"file_chunks_ip":response_data}))
+		print(response)
 
 	def get(self, fs533filename, localfilename):
 		request = ServerRequest(GET,{"filename":fs533filenames})
+		response_data = self.sends(request)
+		print(response_data)
+		# TODO fetch data from follower
+		# merge the chunk into file
 	
 	def remove(self, fs533filename):
+		request = ServerRequest(REMOVE,{"filename":fs533filenames})
+		print(response_data)
+		# TODO request follower delete chunk
+		response = self.sends(ServerRequest(REMOVE_DONE,{"filename":fs533filename}) # Ask leader to clean up metadata
+		print(response)
 
 	
 	def listing_request(self):
-	# to implement ls
+		request = ServerRequest(LS,{})
+		response = self.sends(request)
+		print(response.data)
 	
 
 	def locate_request(self, fs533filename):
-
+		request = ServerRequest(LOCATE,{"filename":fs533filename})
+		response = self.sends(request)
+		print(response.data)
 	
 	def lshere_request(self):
 	

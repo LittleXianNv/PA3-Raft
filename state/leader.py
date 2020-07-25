@@ -5,6 +5,7 @@ from ..message import *
 from ..config import Config
 from collections import defaultdict
 import threading
+from ..constants import *
 
 
 class Leader(State):
@@ -23,11 +24,11 @@ class Leader(State):
         self.hThread = threading.Thread(target=self.heartbeat)
         self.hThread.start()
 
-    def handle_vote_request(self, message):
+    def voteRequestHandler(self, message):
         # Leader would refuse any vote request except the one contain higher term (leader would convert to follower)
         self.sendVoteResponse(message, False)
 
-    def handle_append_entries_response(self, message):
+    def appendEntryResponseHandler(self, message):
         if message.data['success']:
             # Update the index
             self.matchIndex[message.sender] = message.data['matchIndex']
@@ -49,23 +50,49 @@ class Leader(State):
                 return
 
     def handle_client_request(self, request):
-        if request.type == 'GET':
-            key = request.payload['key']
-            # TODO: Response the server
+        if request.type == GET:
+            filename = request.payload["filenames"]
+            response_data = self.server.metadataManager.processGetRequest(
+                filename)
+            response = ServerResponse(200, response_data)
 
-        elif request.type == 'PUT':
-            self.server.log.append(
-                {'action': request.payload, 'term': self.server.curTerm})
-            time.sleep(0.3)  # Wait the log to be applied
-            # Response the server
-            index = self.server.lastLogIndex()
-            if self.server.lastApplied >= index:
-                return ServerResponse('200', {})
-            else:
-                return ServerResponse('400', {})
+        elif request.type == PUT:
+            filename = request.payload["filenames"]
+            file_chunks = request.payload["file_chunks"]
+            response_data = response_data = self.server.metadataManager.preprocessPutRequest(
+                filename, file_chunks)
+            response = ServerResponse(200, response_data)
+
+        elif request.type == PUT_DONE:
+            filename = request.payload["filenames"]
+            file_chunks_ip = request.payload["file_chunks_ip"]
+            self.server.metadataManager.processPutDoneRequest(
+                filename, file_chunks_ip)
+            response = ServerResponse(200, {})
+
+        elif request.type == REMOVE:
+            filename = request.payload["filenames"]
+            response_data = self.server.metadataManager.processRemoveRequest(
+                filename)
+            response = ServerResponse(200, response_data)
+
+        elif request.type == REMOVE_DONE:
+            filename = request.payload["filenames"]
+            self.server.metadataManager.processRemoveDoneRequest(
+                filename)
+            response = ServerResponse(200, {})
+
+        elif request.type == LOCATE:
+            filename = request.payload["filenames"]
+            response_data = self.server.metadataManager.processLocateRequest(
+                filename)
+            response = ServerResponse(200, response_data)
+        elif request.type == LS:
+            response_data = self.server.metadataManager.processLSReqeust()
+            response = ServerResponse(200, response_data)
+
         return response
 
-    # TODO: heartbeat
     def heartbeat(self):
         while True:
             if self.server.state == self:

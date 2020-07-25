@@ -5,7 +5,8 @@ import metadata
 from ..state.candidate import Candidate
 from ..state.follower import Follower
 import zmq
-from config import config
+from ..config import Config
+from ..metadata.metadataManager import MetadataManager
 
 
 class Server(object):
@@ -21,7 +22,8 @@ class Server(object):
         self.state.setServer(self)
         print(self.id+" becomes follower")
         self.timer = None
-        self.metaData = metadata()
+        self.metadata = metadata()
+        self.metadataManager = MetadataManager(self.metadata, self.log, self)
         self.defaultTimeOut(initialTimeout)
 
         self.msgBuffer = deque()  # to do: thread safe design
@@ -113,10 +115,14 @@ class Server(object):
         return
 
     def applyLog(self, newLastAppliedIndex):
-        # apply action in log to metadata
+        # apply actions to log
         for i in range(self.lastApplied+1, newLastAppliedIndex+1):
             logEntry = self.log[i]
-            # TODO: modify metadata
+            if logEntry["functionName"] == "write":
+                self.metadataManager.write(
+                    logEntry["filename"], logEntry["fileChunkListIP"])
+            elif logEntry["functionName"] == "delete":
+                self.metadataManager.delete(logEntry["filename"])
         self.lastApplied = newLastAppliedIndex
 
     def lastLogIndex(self):
