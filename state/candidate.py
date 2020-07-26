@@ -1,7 +1,7 @@
 import time
 import random
-from ..state.state import State
-from ..state.leader import Leader
+from state import State
+from leader import Leader
 from ..config import Config
 from ..message import *
 

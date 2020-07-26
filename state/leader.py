@@ -1,6 +1,6 @@
 import time
 import random
-from ..state.state import State
+from state import State
 from ..message import *
 from ..config import Config
 from collections import defaultdict
