@@ -42,7 +42,6 @@ class Leader(State):
 
     def updateCommitIndex(self):
         machedIndexArray = sorted(self.matchIndex.values())
-        print(machedIndexArray)
         # Find out the index to update
         for i, matchIndex in enumerate(machedIndexArray):
             if matchIndex >= self.server.commitIndex:
@@ -51,7 +50,6 @@ class Leader(State):
                     print("Leader apply log")
                     self.server.applyLog(self.server.commitIndex)
                     self.server.commitIndex = matchIndex+1
-                    print("Metadata is " + str(self.server.metadata.filelist))
                 return
 
     def handle_client_request(self, request):

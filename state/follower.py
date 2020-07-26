@@ -71,7 +71,6 @@ class Follower(State):
                     for x in data["entries"]:
                         log.append(x)
                     self.server.log = log
-                    print("leaderCommit is " + str(data["leaderCommit"]))
                     if data["leaderCommit"] > self.server.commitIndex:
                         self.server.applyLog(self.server.commitIndex)
                         self.server.commitIndex = min(

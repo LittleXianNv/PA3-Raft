@@ -57,7 +57,6 @@ class Client(object):
 
     def remove(self, fs533filename):
         request = ServerRequest(REMOVE, {"filename": fs533filename})
-        print(response_data)
         # TODO request follower delete chunk
         # Ask leader to clean up metadata
         response = self.sends(ServerRequest(
@@ -98,7 +97,7 @@ class Client(object):
                 data = response.data
                 self.ip = response.data["ip_address"]
                 self.port = response.data["port"]
-                print("Redirecting to"+self.ip+":"+str(self.port))
+                print("Redirecting to "+self.ip+":"+str(self.port))
                 socket.close()
                 return self.sends(request)
             elif response.code == '200':
