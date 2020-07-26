@@ -75,6 +75,6 @@ class Follower(State):
                         self.server.commitIndex = min(
                             data["leaderCommit"], self.server.lastLogIndex())
                         self.server.applyLog(self.server.commitIndex)
-                    self.server.leaderId = message.sender
+                    self.leaderId = message.sender
                     self.sendAppendEntryResponse(
                         message, True, self.server.lastLogIndex())

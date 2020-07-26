@@ -1,5 +1,6 @@
 import random
 from collections import defaultdict
+from copy import copy
 
 
 class MetadataManager(object):
@@ -29,7 +30,7 @@ class MetadataManager(object):
 
     def processGetRequest(self, filename):
         ret = dict()
-        if filename not in self.metadata.existFile(filename):
+        if not self.metadata.existFile(filename):
             return None
         for file_chunk in self.metadata.filelist[filename]:
             ret[file_chunk] = self.metadata.filechunks[file_chunk]
@@ -37,11 +38,11 @@ class MetadataManager(object):
 
     def processPutDoneRequest(self, filename, fileChunkListIP):
         self.server.log.append(
-            {"functionName": "WRITE", "filename": filename, "fileChunkListIP": fileChunkListIP})
+            {"functionName": "WRITE", "filename": filename, "fileChunkListIP": fileChunkListIP, 'term': self.server.curTerm})
 
     def processRemoveDoneRequest(self, filename):
         self.server.log.append(
-            {"functionName": "DELETE", "filename": filename})
+            {"functionName": "DELETE", "filename": filename, 'term': self.server.curTerm})
 
     def processLocateRequest(self, filename):
         ret = dict()
@@ -70,5 +71,6 @@ class MetadataManager(object):
 
     def assignDataNode(self):
         # return three ip hosts for replica
-        randomed_list = random.shuffle(self.server.connectedNodes)
-        return randomed_list[:3]
+        copied_list = copy(self.server.connectedNode)
+        random.shuffle(copied_list)
+        return copied_list[:3]

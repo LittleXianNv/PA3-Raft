@@ -94,7 +94,7 @@ class State(object):
         if self.leaderId:
             # reply it with ip and port message
             response = ServerResponse('300', {
-                                      'ip_address': Config.SERVER_LIST[self.leaderId][0], 'port': Config.SERVER_LIST[self.leaderId][1], })
+                                      'ip_address': Config.SERVER_LIST[self.leaderId][0], 'port': Config.SERVER_LIST[self.leaderId][2], })
         else:
             response = ServerResponse('500', {})
         return response

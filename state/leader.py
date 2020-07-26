@@ -52,40 +52,41 @@ class Leader(State):
                 return
 
     def handle_client_request(self, request):
+        print("Leader receiving " + request.type)
         if request.type == GET:
-            filename = request.payload["filenames"]
+            filename = request.payload["filename"]
             response_data = self.server.metadataManager.processGetRequest(
                 filename)
             response = ServerResponse(200, response_data)
 
         elif request.type == PUT:
-            filename = request.payload["filenames"]
+            filename = request.payload["filename"]
             file_chunks = request.payload["file_chunks"]
             response_data = response_data = self.server.metadataManager.preprocessPutRequest(
                 filename, file_chunks)
             response = ServerResponse(200, response_data)
 
         elif request.type == PUT_DONE:
-            filename = request.payload["filenames"]
+            filename = request.payload["filename"]
             file_chunks_ip = request.payload["file_chunks_ip"]
             self.server.metadataManager.processPutDoneRequest(
                 filename, file_chunks_ip)
             response = ServerResponse(200, {})
 
         elif request.type == REMOVE:
-            filename = request.payload["filenames"]
+            filename = request.payload["filename"]
             response_data = self.server.metadataManager.processRemoveRequest(
                 filename)
             response = ServerResponse(200, response_data)
 
         elif request.type == REMOVE_DONE:
-            filename = request.payload["filenames"]
+            filename = request.payload["filename"]
             self.server.metadataManager.processRemoveDoneRequest(
                 filename)
             response = ServerResponse(200, {})
 
         elif request.type == LOCATE:
-            filename = request.payload["filenames"]
+            filename = request.payload["filename"]
             response_data = self.server.metadataManager.processLocateRequest(
                 filename)
             response = ServerResponse(200, response_data)
