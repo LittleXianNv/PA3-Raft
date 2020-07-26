@@ -28,7 +28,7 @@ class Candidate(State):
         # Build the vote request message
         message = VoteRequest(candId, None, term, data)
         # Actual send the message
-        self.server.publish_message(message)
+        self.server.publishMsg(message)
         return
 
     def voteResponseHandler(self, message):

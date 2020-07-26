@@ -15,11 +15,11 @@ class Leader(State):
         State.__init__(self, server)
         self.matchIndex = defaultdict(int)
         self.nextIndex = defaultdict(int)
-        for adjacent in self.server.adjacents:
+        for node in self.server.connectedNode:
             # For each server, index of the next log entry to send to that server
-            self.nextIndex[adjacent] = self.server.lastLogIndex() + 1
+            self.nextIndex[node] = self.server.lastLogIndex() + 1
             # For each server, index of highest log entry known to be replicated on server
-            self.matchIndex[adjacent] = 0
+            self.matchIndex[node] = 0
         if self.server.timer:
             self.server.timer.cancel()
         # heartbeat
@@ -98,9 +98,9 @@ class Leader(State):
     def heartbeat(self):
         while True:
             if self.server.state == self:
-                # Specify heartbeart message to all adjacient nodes
-                for adjacent in self.server.connectedNode:
-                    self.server.log_lock.acquire()
+                # Specify heartbeart message to all adjacent nodes
+                for node in self.server.connectedNode:
+                    self.server.logLock.acquire()
                     data = {
                         'prevLogIndex': self.server.lastLogIndex(),
                         'prevLogTerm': self.server.lastLogTerm(),
@@ -109,13 +109,13 @@ class Leader(State):
                     }
                     self.server.logLock.release()
 
-                    if self.server.lastLogIndex() >= self.nextIndex[adjacent]:
-                        data['prevLogIndex'] = self.nextIndex[adjacent]-1
+                    if self.server.lastLogIndex() >= self.nextIndex[node]:
+                        data['prevLogIndex'] = self.nextIndex[node]-1
                         data['prevLogTerm'] = self.server.log[data['prevLogIndex']]['term']
-                        data['entries'] = self.server.log[self.nextIndex[adjacent]
+                        data['entries'] = self.server.log[self.nextIndex[node]
                             :self.server.lastLogIndex()+1]
                     message = AppendEntriesRequest(
-                        self.server.id, adjacent, self.server.curTerm, data)
+                        self.server.id, node, self.server.curTerm, data)
                     self.server.publishMsg(message)
                 time.sleep(0.2)
             else:

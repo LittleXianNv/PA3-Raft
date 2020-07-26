@@ -1,5 +1,4 @@
 # Start server node and call server.py
-from servernode import *
 from state.follower import Follower
 from state.candidate import Candidate
 from servernode.server import Server

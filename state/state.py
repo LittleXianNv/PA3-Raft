@@ -28,7 +28,7 @@ class State(object):
             self.server.id, message.sender, message.term, data)
         if voteGranted:
             print(response.sender + " vote " + response.receiver +
-                  ' current term is '+str(self.server.currentTerm))
+                  ' current term is '+str(self.server.curTerm))
         else:
             print(response.sender+" refuse to vote " + response.receiver)
         self.server.publishMsg(response)
@@ -36,7 +36,7 @@ class State(object):
     # Handle the vote request message
     def voteRequestHandler(self, message):
         # If the message term is outdated, discard the message
-        if message.term < self.server.currentTerm or "lastLogIndex" not in message.data.keys():
+        if message.term < self.server.curTerm or "lastLogIndex" not in message.data.keys():
             self.sendVoteResponse(message, False)
 
         elif (self.votedFor is None or self.votedFor == message.sender) and message.data["lastLogIndex"] >= (len(self.server.log) - 1):
@@ -84,7 +84,7 @@ class State(object):
         elif msg.type == Message.APPEND_ENTRIES_RESPONSE:
             self.appendEntryResponseHandler(msg)
         elif msg.type == Message.VOTE_RESPONSE:
-            self.voteReponseHandler(msg)
+            self.voteResponseHandler(msg)
         elif msg.type == Message.BAD_RESPONSE:
             print("ERROR")
         else:

@@ -43,7 +43,7 @@ class Server(object):
     def processClient(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://127.0.0.1:%s" % config.SERVER_LIST[self.id][2])
+        socket.bind("tcp://127.0.0.1:%s" % Config.SERVER_LIST[self.id][2])
         while True:
             # if the response is not python object, there will be an exception.
             try:
@@ -78,7 +78,7 @@ class Server(object):
     def publishTask(self):
         context = zmq.Context()
         socket = context.socket(zmq.PUB)
-        socket.bind("tcp://0.0.0.0:%d" % config.SERVER_LIST[self.id][1])
+        socket.bind("tcp://0.0.0.0:%d" % Config.SERVER_LIST[self.id][1])
         while True:
             if self.msgBuffer:
                 self.bufferLock.acquire()
@@ -91,10 +91,10 @@ class Server(object):
         context = zmq.Context()
         socket = context.socket(zmq.SUB)
 
-        # subscribe the publish port of all adjacient server
+        # subscribe the publish port of all adjacent server
         for node in self.connectedNode:
             socket.connect("tcp://127.0.0.1:%d" %
-                           config.SERVER_LIST[node][1])
+                           Config.SERVER_LIST[node][1])
 
         while True:
             socket.setsockopt(zmq.SUBSCRIBE, ''.encode('utf-8'))
@@ -135,7 +135,7 @@ class Server(object):
 
     def lastLogTerm(self):
         # return the term of the last log entry
-        return self.log[-1]["term"]
+        return -1 if len(self.log) == 0 else self.log[-1]["term"]
 
     def setState(self, state):
         self.state = state
