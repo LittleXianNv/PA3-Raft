@@ -19,7 +19,7 @@ class Leader(State):
             # For each server, index of the next log entry to send to that server
             self.nextIndex[node] = self.server.lastLogIndex() + 1
             # For each server, index of highest log entry known to be replicated on server
-            self.matchIndex[node] = 0
+            self.matchIndex[node] = -1
         if self.server.timer:
             self.server.timer.cancel()
         # heartbeat
@@ -42,57 +42,56 @@ class Leader(State):
 
     def updateCommitIndex(self):
         machedIndexArray = sorted(self.matchIndex.values())
+        print(machedIndexArray)
         # Find out the index to update
         for i, matchIndex in enumerate(machedIndexArray):
-            if matchIndex > self.server.commitIndex:
+            if matchIndex >= self.server.commitIndex:
                 if len(machedIndexArray) - i >= (len(machedIndexArray) / 2):
                     # Update the commit index and log the commit index
-                    self.server.commitIndex = matchIndex
+                    print("Leader apply log")
                     self.server.applyLog(self.server.commitIndex)
+                    self.server.commitIndex = matchIndex+1
+                    print("Metadata is " + str(self.server.metadata.filelist))
                 return
 
     def handle_client_request(self, request):
+        print(self.server.metadata.filelist)
         print("Leader receiving " + request.type)
-        if request.type == GET:
-            filename = request.payload["filename"]
-            response_data = self.server.metadataManager.processGetRequest(
-                filename)
-            response = ServerResponse(200, response_data)
 
-        elif request.type == PUT:
+        if request.type == PUT:
             filename = request.payload["filename"]
             file_chunks = request.payload["file_chunks"]
             response_data = response_data = self.server.metadataManager.preprocessPutRequest(
                 filename, file_chunks)
-            response = ServerResponse(200, response_data)
+            response = ServerResponse("200", response_data)
 
         elif request.type == PUT_DONE:
             filename = request.payload["filename"]
             file_chunks_ip = request.payload["file_chunks_ip"]
             self.server.metadataManager.processPutDoneRequest(
                 filename, file_chunks_ip)
-            response = ServerResponse(200, {})
+            response = ServerResponse("200", {})
 
         elif request.type == REMOVE:
             filename = request.payload["filename"]
             response_data = self.server.metadataManager.processRemoveRequest(
                 filename)
-            response = ServerResponse(200, response_data)
+            response = ServerResponse("200", response_data)
 
         elif request.type == REMOVE_DONE:
             filename = request.payload["filename"]
             self.server.metadataManager.processRemoveDoneRequest(
                 filename)
-            response = ServerResponse(200, {})
+            response = ServerResponse("200", {})
 
         elif request.type == LOCATE:
             filename = request.payload["filename"]
             response_data = self.server.metadataManager.processLocateRequest(
                 filename)
-            response = ServerResponse(200, response_data)
+            response = ServerResponse("200", response_data)
         elif request.type == LS:
             response_data = self.server.metadataManager.processLSReqeust()
-            response = ServerResponse(200, response_data)
+            response = ServerResponse("200", response_data)
 
         return response
 
@@ -113,8 +112,7 @@ class Leader(State):
                     if self.server.lastLogIndex() >= self.nextIndex[node]:
                         data['prevLogIndex'] = self.nextIndex[node]-1
                         data['prevLogTerm'] = self.server.log[data['prevLogIndex']]['term']
-                        data['entries'] = self.server.log[self.nextIndex[node]
-                            :self.server.lastLogIndex()+1]
+                        data['entries'] = self.server.log[self.nextIndex[node]:self.server.lastLogIndex()+1]
                     message = AppendEntriesRequest(
                         self.server.id, node, self.server.curTerm, data)
                     self.server.publishMsg(message)

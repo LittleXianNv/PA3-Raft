@@ -22,7 +22,7 @@ class Server(object):
         self.commitIndex = 0
         # to count current term
         self.curTerm = 0
-        self.lastApplied = 0
+        self.lastApplied = -1
         self.state.setServer(self)
         print(self.id+" becomes follower")
         self.timer = None
@@ -120,13 +120,14 @@ class Server(object):
         return
 
     def applyLog(self, newLastAppliedIndex):
+        print("ID "+str(self.id) + "Commit log")
         # apply actions to log
         for i in range(self.lastApplied+1, newLastAppliedIndex+1):
             logEntry = self.log[i]
-            if logEntry["functionName"] == "write":
+            if logEntry["functionName"] == "WRITE":
                 self.metadataManager.write(
                     logEntry["filename"], logEntry["fileChunkListIP"])
-            elif logEntry["functionName"] == "delete":
+            elif logEntry["functionName"] == "DELETE":
                 self.metadataManager.delete(logEntry["filename"])
         self.lastApplied = newLastAppliedIndex
 

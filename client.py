@@ -3,6 +3,7 @@ from config import Config
 from message import *
 from constants import *
 import sys
+from copy import deepcopy
 
 
 class Client(object):
@@ -35,22 +36,22 @@ class Client(object):
             print("wrong input format!")
 
     def put(self, localfilename, fs533filename):
-        # split localfile into file chunk
+        # hardcode localfile into file chunk
+        # TODO split file into chunks by specific size
         chunk_num = 3
-        chunk_list = [fs533filename+"."+str(i for i in range(chunk_num))]
+        chunk_list = []
+        for i in range(chunk_num):
+            chunk_list.append(fs533filename+"."+str(int(i)))
         request = ServerRequest(
             PUT, {"filename": fs533filename, "file_chunks": chunk_list})
         response_data = self.sends(request)
-        print(response_data)
         # TODO send file to the server indicated by response from leader
         response = self.sends(ServerRequest(
             PUT_DONE, {"filename": fs533filename, "file_chunks_ip": response_data}))
-        print(response)
 
     def get(self, fs533filename, localfilename):
-        request = ServerRequest(GET, {"filename": fs533filename})
-        response_data = self.sends(request)
-        print(response_data)
+        response_data = self.locate_request(fs533filename)
+        # call the locate function to search the file
         # TODO fetch data from follower
         # merge the chunk into file
 
@@ -64,14 +65,25 @@ class Client(object):
         print(response)
 
     def listing_request(self):
+        # list all files in the file system
         request = ServerRequest(LS, {})
         response = self.sends(request)
-        print(response.data)
+        print(response)
 
     def locate_request(self, fs533filename):
         request = ServerRequest(LOCATE, {"filename": fs533filename})
         response = self.sends(request)
-        print(response.data)
+        # if the file is not found, print message
+        if response == None:
+            print("Not found")
+            return None
+        formated_response = deepcopy(response)
+        # get the list where each chunk was stored
+        for chunk_name in formated_response:
+            formated_response[chunk_name] = [Config.SERVER_LIST[ID][0]+":"+str(Config.SERVER_LIST[ID][1])
+                                             for ID in formated_response[chunk_name]]
+        print(formated_response)
+        return response
 
     def lshere_request(self):
         pass
@@ -81,6 +93,7 @@ class Client(object):
         socket.send_pyobj(request)
         try:
             response = socket.recv_pyobj()
+            print("Response type:" + str(response.code))
             if response.code == '300':
                 data = response.data
                 self.ip = response.data["ip_address"]
@@ -90,7 +103,7 @@ class Client(object):
                 return self.sends(request)
             elif response.code == '200':
                 print(response)
-                print("succeeds")
+                print("succeed")
                 return response.data
             elif response.code == '400':
                 print(response)

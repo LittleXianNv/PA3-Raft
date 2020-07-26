@@ -71,10 +71,11 @@ class Follower(State):
                     for x in data["entries"]:
                         log.append(x)
                     self.server.log = log
+                    print("leaderCommit is " + str(data["leaderCommit"]))
                     if data["leaderCommit"] > self.server.commitIndex:
-                        self.server.commitIndex = min(
-                            data["leaderCommit"], self.server.lastLogIndex())
                         self.server.applyLog(self.server.commitIndex)
+                        self.server.commitIndex = min(
+                            data["leaderCommit"], self.server.lastLogIndex()+1)
                     self.leaderId = message.sender
                     self.sendAppendEntryResponse(
                         message, True, self.server.lastLogIndex())

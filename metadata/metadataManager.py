@@ -14,6 +14,7 @@ class MetadataManager(object):
         # return {chunkName:List<ip>}
         ret = defaultdict(list)
         for chunkName in fileChunkList:
+            print("ChunkName is: "+str(chunkName))
             if self.metadata.existFile(filename) and chunkName in self.metadata.filechunks:
                 ret[chunkName].extend(self.filechunks[chunkName])
             else:
@@ -46,7 +47,7 @@ class MetadataManager(object):
 
     def processLocateRequest(self, filename):
         ret = dict()
-        if filename not in self.metadata.existFile(filename):
+        if not self.metadata.existFile(filename):
             return None
         for file_chunk in self.metadata.filelist[filename]:
             ret[file_chunk] = self.metadata.filechunks[file_chunk]
@@ -73,4 +74,5 @@ class MetadataManager(object):
         # return three ip hosts for replica
         copied_list = copy(self.server.connectedNode)
         random.shuffle(copied_list)
+        print("Shuffle is " + str(copied_list[:3]))
         return copied_list[:3]
