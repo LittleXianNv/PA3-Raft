@@ -1,9 +1,11 @@
 import time
 import random
-from state import State
-from leader import Leader
-from ..config import Config
-from ..message import *
+from state.state import State
+from state.leader import Leader
+from config import Config
+from message import *
+import sys
+sys.path.append("..")
 
 
 class Candidate(State):

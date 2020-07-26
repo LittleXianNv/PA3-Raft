@@ -1,8 +1,10 @@
 import time
 import random
-from state import State
-from ..message import *
-from ..config import Config
+from state.state import State
+from message import *
+from config import Config
+import sys
+sys.path.append("..")
 
 
 class Follower(State):

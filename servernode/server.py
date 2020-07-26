@@ -1,12 +1,16 @@
+from collections import deque
+import random
 import time
 from threading import Timer
 import threading
-import metadata
-from ..state.candidate import Candidate
-from ..state.follower import Follower
+from metadata.metadata import Metadata
+from state.candidate import Candidate
+from state.follower import Follower
 import zmq
-from ..config import Config
-from ..metadata.metadataManager import MetadataManager
+from config import Config
+from metadata.metadataManager import MetadataManager
+import sys
+sys.path.append("..")
 
 
 class Server(object):
@@ -22,7 +26,7 @@ class Server(object):
         self.state.setServer(self)
         print(self.id+" becomes follower")
         self.timer = None
-        self.metadata = metadata()
+        self.metadata = Metadata()
         self.metadataManager = MetadataManager(self.metadata, self.log, self)
         self.defaultTimeOut(initialTimeout)
 
@@ -49,7 +53,7 @@ class Server(object):
             except Exception as e:
                 print(e)
 
-    def defaultTimeOut(initialTimeout):
+    def defaultTimeOut(self, initialTimeout):
         if not initialTimeout:
             self.setElectionTimer()
         else:

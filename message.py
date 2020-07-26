@@ -23,16 +23,9 @@ class Message(object):
         self.data = data
 
 
-<< << << < HEAD
 class AppendEntriesRequest(Message):
 
-
-== == == =
-class AppendEntriesRequest(BaseMessage):
-
-
->>>>>> > df2a0a8... finish metadataManager and metadata class
-'''Append entries request
+    '''Append entries request
 
     This class represents the request to append entries.
 
@@ -47,28 +40,15 @@ class AppendEntriesRequest(BaseMessage):
                     }
     '''
 
+    def __init__(self, sender, receiver, term, data):
 
-def __init__(self, sender, receiver, term, data):
-
-
-<< << << < HEAD
-Message.__init__(self, sender, receiver, term, data)
-self.type = Message.APPEND_ENTRIES_REQUEST
+        Message.__init__(self, sender, receiver, term, data)
+        self.type = Message.APPEND_ENTRIES_REQUEST
 
 
 class AppendEntriesResponse(Message):
 
-
-== == == =
-BaseMessage.__init__(self, sender, receiver, term, data)
-self.type = BaseMessage.APPEND_ENTRIES_REQUEST
-
-
-class AppendEntriesResponse(BaseMessage):
-
-
->>>>>> > df2a0a8... finish metadataManager and metadata class
-'''Append entries response
+    '''Append entries response
 
     This class represents the response to append entries.
 
@@ -79,28 +59,15 @@ class AppendEntriesResponse(BaseMessage):
             }
     '''
 
+    def __init__(self, sender, receiver, term, data):
 
-def __init__(self, sender, receiver, term, data):
-
-
-<< << << < HEAD
-Message.__init__(self, sender, receiver, term, data)
-self.type = Message.APPEND_ENTRIES_RESPONSE
+        Message.__init__(self, sender, receiver, term, data)
+        self.type = Message.APPEND_ENTRIES_RESPONSE
 
 
 class VoteRequest(Message):
 
-
-== == == =
-BaseMessage.__init__(self, sender, receiver, term, data)
-self.type = BaseMessage.APPEND_ENTRIES_RESPONSE
-
-
-class VoteRequest(BaseMessage):
-
-
->>>>>> > df2a0a8... finish metadataManager and metadata class
-'''Vote request
+    '''Vote request
 
     This class represents the request to append entries.
 
@@ -113,28 +80,15 @@ class VoteRequest(BaseMessage):
             }
     '''
 
+    def __init__(self, sender, receiver, term, data):
 
-def __init__(self, sender, receiver, term, data):
-
-
-<< << << < HEAD
-Message.__init__(self, sender, receiver, term, data)
-self.type = Message.VOTE_REQUEST
+        Message.__init__(self, sender, receiver, term, data)
+        self.type = Message.VOTE_REQUEST
 
 
 class VoteResponse(Message):
 
-
-== == == =
-BaseMessage.__init__(self, sender, receiver, term, data)
-self.type = BaseMessage.VOTE_REQUEST
-
-
-class VoteResponse(BaseMessage):
-
-
->>>>>> > df2a0a8... finish metadataManager and metadata class
-'''Vote response
+    '''Vote response
 
     This class represents the response to vote.
 
@@ -145,33 +99,16 @@ class VoteResponse(BaseMessage):
             }
     '''
 
+    def __init__(self, sender, receiver, term, data):
 
-def __init__(self, sender, receiver, term, data):
-
-
-<< << << < HEAD
-Message.__init__(self, sender, receiver, term, data)
-self.type = Message.VOTE_RESPONSE
+        Message.__init__(self, sender, receiver, term, data)
+        self.type = Message.VOTE_RESPONSE
 
 
 class BadResponse(Message):
     def __init__(self, sender, receiver, term, data):
         Message.__init__(self, sender, receiver, term, data)
         self.type = Message.BAD_RESPONSE
-
-
-== == == =
-BaseMessage.__init__(self, sender, receiver, term, data)
-self.type = BaseMessage.VOTE_RESPONSE
-
-
-class BadResponse(BaseMessage):
-    def __init__(self, sender, receiver, term, data):
-        BaseMessage.__init__(self, sender, receiver, term, data)
-        self.type = BaseMessage.BAD_RESPONSE
-
-
->>>>>> > df2a0a8... finish metadataManager and metadata class
 
 
 class ServerRequest(object):
@@ -195,7 +132,7 @@ class ServerRequest(object):
                     "filename":String
                     -----------
             }
-    '''
+   '''
 
     def __init__(self, type, payload):
         self.type = type

@@ -57,7 +57,7 @@ class Client(object):
 		request = ServerRequest(REMOVE,{"filename":fs533filenames})
 		print(response_data)
 		# TODO request follower delete chunk
-		response = self.sends(ServerRequest(REMOVE_DONE,{"filename":fs533filename}) # Ask leader to clean up metadata
+		response = self.sends(ServerRequest(REMOVE_DONE,{"filename":fs533filename})) # Ask leader to clean up metadata
 		print(response)
 
 	

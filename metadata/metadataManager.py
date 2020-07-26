@@ -1,6 +1,5 @@
-import copy from copy
 import random
-import defaultdict from collections
+from collections import defaultdict
 
 
 class MetadataManager(object):

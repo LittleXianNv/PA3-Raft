@@ -1,11 +1,13 @@
 import time
 import random
-from state import State
-from ..message import *
-from ..config import Config
+from state.state import State
+from message import *
+from config import Config
 from collections import defaultdict
 import threading
-from ..constants import *
+from constants import *
+import sys
+sys.path.append("..")
 
 
 class Leader(State):
@@ -110,7 +112,8 @@ class Leader(State):
                     if self.server.lastLogIndex() >= self.nextIndex[adjacent]:
                         data['prevLogIndex'] = self.nextIndex[adjacent]-1
                         data['prevLogTerm'] = self.server.log[data['prevLogIndex']]['term']
-                        data['entries'] = self.server.log[self.nextIndex[adjacent]:self.server.lastLogIndex()+1]
+                        data['entries'] = self.server.log[self.nextIndex[adjacent]
+                            :self.server.lastLogIndex()+1]
                     message = AppendEntriesRequest(
                         self.server.id, adjacent, self.server.curTerm, data)
                     self.server.publishMsg(message)

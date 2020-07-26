@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 
-class Metadata(Object):
+class Metadata(object):
     def __init__(self):
         # map of file chunk to list of store ip
         self.filechunks = defaultdict(list)

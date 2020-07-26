@@ -1,7 +1,9 @@
 import time
 import random
-from ..message import *
-from ..config import Config
+from message import *
+from config import Config
+import sys
+sys.path.append("..")
 
 
 class State(object):
@@ -12,7 +14,7 @@ class State(object):
         self.votedFor = None       # CandidateId that received vote in current term
         self.currentTerm = 0
         if server:
-            self.server.set_state(self)
+            self.server.setState(self)
 
     # Initialize and specify the server to live
     def setServer(self, server):
