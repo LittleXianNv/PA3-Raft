@@ -16,6 +16,9 @@ sys.path.append("..")
 class Server(object):
 
     # Server initialization, having three threads
+    # Thread #1: publishTask
+    # Thread #2: subscribeTask, subscribe the publish port of all adjacent server
+    # Thread #3: processClient, listen for client request and handle it
     def __init__(self, id, state, log, connectedNode, initialTimeout=None):
         self.id = id
         self.state = state
@@ -41,7 +44,7 @@ class Server(object):
         self.pThread = threading.Thread(target=self.processClient)
         self.pThread.start()
 
-    # Thread, wait for client request and handle it
+    # Thread, listen for client request and handle it
     def processClient(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
@@ -92,7 +95,7 @@ class Server(object):
                 socket.send_pyobj(message)
             time.sleep(0.01)
 
-    # subscribe the publish port of all adjacent server
+    # subscribe the publish port of all adjacent servers
     def subscribeTask(self):
         context = zmq.Context()
         socket = context.socket(zmq.SUB)

@@ -5,7 +5,7 @@ from config import Config
 import sys
 sys.path.append("..")
 
-
+# Base class for leader/candidate/follower
 class State(object):
 
     def __init__(self, server=None):

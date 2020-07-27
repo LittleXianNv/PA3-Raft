@@ -11,14 +11,16 @@ serverList = []
 serverId = [i for i in range(1, 6)]
 threads = []
 
-# Program entry point
-# Start server node and call server.py
+# File system Program entry point
+# arg[0] server.py
+# Start five server nodes, ip and port are listed in configuration file
+# All nodes start as followers
 
 for i, id in enumerate(serverId):
     if i == 0:
         t = threading.Thread(target=serverList.append, args=(Server(str(id), Follower(
             None), [], [str(_) for _ in serverId[:i]+serverId[i+1:]], 0.2),))
-        # connectedNode list contains all other nodes expect itself
+        # connectedNode list contains all other nodes except itself
         t.start()
     else:
         t = threading.Thread(target=serverList.append, args=(Server(

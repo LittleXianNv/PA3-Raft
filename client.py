@@ -51,9 +51,9 @@ class Client(object):
         response = self.sends(ServerRequest(
             PUT_DONE, {"filename": fs533filename, "file_chunks_ip": response_data}))
 
+    # call the locate function to search the file
     def get(self, fs533filename, localfilename):
         response_data = self.locate_request(fs533filename)
-        # call the locate function to search the file
         # TODO fetch data from follower
         # merge the chunk into file
 

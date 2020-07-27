@@ -26,9 +26,7 @@ class Message(object):
 class AppendEntriesRequest(Message):
 
     '''Append entries request
-
     This class represents the request to append entries.
-
     Attributes:
             sender, receiver, term: Please see above explainations.
             data: {
@@ -49,9 +47,7 @@ class AppendEntriesRequest(Message):
 class AppendEntriesResponse(Message):
 
     '''Append entries response
-
     This class represents the response to append entries.
-
     Attributes:
             sender, receiver, term: Please see above explainations.
             data: {
@@ -68,9 +64,7 @@ class AppendEntriesResponse(Message):
 class VoteRequest(Message):
 
     '''Vote request
-
     This class represents the request to append entries.
-
     Attributes:
             sender, receiver, term: Please see above explainations.
             data: {
@@ -89,9 +83,7 @@ class VoteRequest(Message):
 class VoteResponse(Message):
 
     '''Vote response
-
     This class represents the response to vote.
-
     Attributes:
             sender, receiver, term: Please see above explainations.
             data: {
@@ -113,24 +105,20 @@ class BadResponse(Message):
 
 class ServerRequest(object):
     '''ServerRequest
-
-    This class represents the request to server.
-
+    This class represents the client request to server.
     Attributes:
-            type: PREP_PUT|GET|PUT|PUT_DONE|LS|REMOVE_PREP|REMOVE|REMOVE_DONE|LOCATE|LSHERE
+            type: GET|PUT|PUT_DONE|LS|REMOVE|REMOVE_DONE|LOCATE|LSHERE
             payload: {
-                    PREP_PUT:
-                    "filename":String
-                    -----------
                     GET:
                     "filename":String
-                    -----------
                     PUT:
                     "filename":String
-                    -----------
                     PUT_DONE:
                     "filename":String
-                    -----------
+                    REMOVE:
+                    "filename":String
+                    REMOVE_DONE:
+                    "filename":String
             }
    '''
 
@@ -141,9 +129,7 @@ class ServerRequest(object):
 
 class ServerResponse(object):
     '''ServerResponse
-
     This class represents the response to client.
-
     Attributes:
             code : 200|300|400|500 (ok|redirect|bad|leader not found)
             data:{
