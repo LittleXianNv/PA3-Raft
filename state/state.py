@@ -12,7 +12,6 @@ class State(object):
         self.leaderId = None       # Follower can redirect clients to leader
         self.server = server
         self.votedFor = None       # CandidateId that received vote in current term
-        self.currentTerm = 0
         if server:
             self.server.setState(self)
 
@@ -50,7 +49,7 @@ class State(object):
         else:
             self.sendVoteResponse(message, False)
 
-    # NULL function for override
+    # NULL function for subclasses to override
     def voteResponseHandler(self, message):
         pass
 
@@ -65,7 +64,6 @@ class State(object):
         data = {}
         response = BadResponse(
             self.server.name, message.sender, message.term, data)
-        # self.server.send_response(response)
 
     # General message handler
     def handleMsg(self, msg):

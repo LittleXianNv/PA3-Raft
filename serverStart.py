@@ -1,4 +1,3 @@
-# Start server node and call server.py
 from state.follower import Follower
 from state.candidate import Candidate
 from servernode.server import Server
@@ -8,12 +7,12 @@ import threading
 import time
 import sys
 
-
 serverList = []
 serverId = [i for i in range(1, 6)]
-
 threads = []
 
+# Program entry point
+# Start server node and call server.py
 
 for i, id in enumerate(serverId):
     if i == 0:

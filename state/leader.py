@@ -52,10 +52,13 @@ class Leader(State):
                     self.server.commitIndex = matchIndex+1
                 return
 
+
+    # Message handler only deal with client request
     def handle_client_request(self, request):
         print(self.server.metadata.filelist)
         print("Leader receiving " + request.type)
 
+        # Add a local file to the cluster with the given filename
         if request.type == PUT:
             filename = request.payload["filename"]
             file_chunks = request.payload["file_chunks"]
@@ -70,6 +73,7 @@ class Leader(State):
                 filename, file_chunks_ip)
             response = ServerResponse("200", {})
 
+        # To delete a file from the cluster
         elif request.type == REMOVE:
             filename = request.payload["filename"]
             response_data = self.server.metadataManager.processRemoveRequest(
@@ -82,17 +86,22 @@ class Leader(State):
                 filename)
             response = ServerResponse("200", {})
 
+        # List all machines of the servers that contain a copy of the file
         elif request.type == LOCATE:
             filename = request.payload["filename"]
             response_data = self.server.metadataManager.processLocateRequest(
                 filename)
             response = ServerResponse("200", response_data)
+
+        # List all files in the cluster
         elif request.type == LS:
             response_data = self.server.metadataManager.processLSReqeust()
             response = ServerResponse("200", response_data)
 
         return response
 
+    # Leader send periodic heartbeat messages to all the 
+    # followers in order to maintain its authority. 
     def heartbeat(self):
         while True:
             if self.server.state == self:

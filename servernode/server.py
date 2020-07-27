@@ -14,13 +14,14 @@ sys.path.append("..")
 
 
 class Server(object):
+
+    # Server initialization, having three threads
     def __init__(self, id, state, log, connectedNode, initialTimeout=None):
         self.id = id
         self.state = state
         self.log = log
         self.connectedNode = connectedNode  # list of node id
-        self.commitIndex = 0
-        # to count current term
+        self.commitIndex = 0                # to count current term
         self.curTerm = 0
         self.lastApplied = -1
         self.state.setServer(self)
@@ -40,6 +41,7 @@ class Server(object):
         self.pThread = threading.Thread(target=self.processClient)
         self.pThread.start()
 
+    # Thread, wait for client request and handle it
     def processClient(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
@@ -60,6 +62,7 @@ class Server(object):
         else:
             self.setElectionTimer(initialTimeout)
 
+    # Randomized election timeout to accelerate resolving the split vote problem
     def setElectionTimer(self, timeout=random.randrange(200, 400)/1000):
         # cancel original timer to prevent duplicated candidate living on one server
         if self.timer:
@@ -68,6 +71,7 @@ class Server(object):
         # if timeout, server change to cnadidate to send election request
         self.timer.start()
 
+    # change server state from follower to candidate
     def changeStateToCandidate(self):
         self.curTerm += 1
         print(self.id+" becomes candidate and start election. term number is " +
@@ -88,11 +92,11 @@ class Server(object):
                 socket.send_pyobj(message)
             time.sleep(0.01)
 
+    # subscribe the publish port of all adjacent server
     def subscribeTask(self):
         context = zmq.Context()
         socket = context.socket(zmq.SUB)
 
-        # subscribe the publish port of all adjacent server
         for node in self.connectedNode:
             socket.connect("tcp://127.0.0.1:%d" %
                            Config.SERVER_LIST[node][1])
@@ -103,8 +107,8 @@ class Server(object):
             if msg.receiver == self.id or msg.receiver == None:
                 self.receiveMsg(msg)
 
+    # push the message to the publish message queue
     def publishMsg(self, msg):
-        # push the message to the publish message queue
         self.bufferLock.acquire()
         self.msgBuffer.append(msg)
         self.bufferLock.release()
@@ -130,13 +134,13 @@ class Server(object):
             elif logEntry["functionName"] == "DELETE":
                 self.metadataManager.delete(logEntry["filename"])
         self.lastApplied = newLastAppliedIndex
-
+    
+    # return the index of the last log entry
     def lastLogIndex(self):
-        # return the index of the last log entry
         return len(self.log)-1
 
+    # return the term of the last log entry
     def lastLogTerm(self):
-        # return the term of the last log entry
         return -1 if len(self.log) == 0 else self.log[-1]["term"]
 
     def setState(self, state):

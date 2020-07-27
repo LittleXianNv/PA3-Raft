@@ -44,7 +44,7 @@ class Candidate(State):
                 # If sender refuse vote for candidate, set sender to zero
                 self.voteReceived[message.sender] = 0
 
-        # TODO: Check if the candidate can be promoted to leader
+        # Check if the candidate can be promoted to leader
         if type(self.server.state) == Candidate and 2 * sum(self.voteReceived.values()) > Config.NUMBER_TOTAL_SERVERS:
             # Now promote to leader
             print(self.server.id+" become leader"+'\ncurrent term is: '+str(self.server.curTerm)

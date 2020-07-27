@@ -12,12 +12,14 @@ class Client(object):
         self.ip = Config.SERVER_LIST[str(self.id)][0]
         self.port = Config.SERVER_LIST[str(self.id)][2]
 
+    # Connection initialization
     def init_socket(self):
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
         socket.connect("tcp://"+self.ip+":"+str(self.port))
         return socket
 
+    # call operation function based on client argument
     def manageArgv(self):
         argv = sys.argv
         if argv[1] == 'put':
@@ -55,20 +57,21 @@ class Client(object):
         # TODO fetch data from follower
         # merge the chunk into file
 
+    # Ask leader to clean up metadata
     def remove(self, fs533filename):
         request = ServerRequest(REMOVE, {"filename": fs533filename})
         # TODO request follower delete chunk
-        # Ask leader to clean up metadata
         response = self.sends(ServerRequest(
             REMOVE_DONE, {"filename": fs533filename}))
         print(response)
 
+    # list all files in the file system
     def listing_request(self):
-        # list all files in the file system
         request = ServerRequest(LS, {})
         response = self.sends(request)
         print(response)
 
+    # List all machines of the servers that contain a copy of the file
     def locate_request(self, fs533filename):
         request = ServerRequest(LOCATE, {"filename": fs533filename})
         response = self.sends(request)
@@ -87,6 +90,7 @@ class Client(object):
     def lshere_request(self):
         pass
 
+    # Connect and send the operation request to the file system
     def sends(self, request):
         socket = self.init_socket()
         socket.send_pyobj(request)
