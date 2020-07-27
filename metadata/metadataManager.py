@@ -22,6 +22,7 @@ class MetadataManager(object):
         return ret
 
     def processRemoveRequest(self, filename):
+        # locate the filechunks to be removed
         ret = defaultdict(list)
         fileChunkList = self.metadata.filelist[filename]
         for chunkName in fileChunkList:
@@ -30,6 +31,7 @@ class MetadataManager(object):
         return ret
 
     def processGetRequest(self, filename):
+        # locate filechunks to be returned
         ret = dict()
         if not self.metadata.existFile(filename):
             return None
@@ -38,14 +40,17 @@ class MetadataManager(object):
         return ret
 
     def processPutDoneRequest(self, filename, fileChunkListIP):
+        # add the file information to the log to be added
         self.server.log.append(
             {"functionName": "WRITE", "filename": filename, "fileChunkListIP": fileChunkListIP, 'term': self.server.curTerm})
 
     def processRemoveDoneRequest(self, filename):
+        # add the information of the file to the log to be removed
         self.server.log.append(
             {"functionName": "DELETE", "filename": filename, 'term': self.server.curTerm})
 
     def processLocateRequest(self, filename):
+        # locate the chunks and return the information
         ret = dict()
         if not self.metadata.existFile(filename):
             return None
@@ -54,14 +59,17 @@ class MetadataManager(object):
         return ret
 
     def processLSReqeust(self):
+        # return all the keys in metadata
         return [key for key in self.metadata.filelist]
 
     def write(self, filename, fileChunkListIP):
+        # log commit phase
         self.metadata.filelist[filename] = [key for key in fileChunkListIP]
         for file_chunk in fileChunkListIP:
             self.metadata.filechunks[file_chunk] = fileChunkListIP[file_chunk]
 
     def delete(self, filename):
+        # log commit phase
         if filename not in self.metadata.filelist:
             return
         chunk_list = self.metadata.filelist[filename]

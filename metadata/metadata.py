@@ -23,7 +23,9 @@ class Metadata(object):
         return self.filechunks[fileChunkName]
 
     def existFile(self, filename):
+        # check if the filename given exist
         return filename in self.filelist
 
     def existFileChunk(self, fileChunkName):
+        # check if the chunk exist
         return fileChunkName in self.filechunks
